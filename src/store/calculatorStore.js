@@ -1,5 +1,13 @@
 import { create } from 'zustand';
 
+const safeEvaluate = (expression) => {
+  try {
+    return new Function(`return (${expression})`)();
+  } catch {
+    return 'Error';
+  }
+};
+
 const useCalculatorStore = create((set) => ({
   input: '',
   buttons: ['1', '2', '3', '+', '4', '5', '6', '-', '7', '8', '9', '*', '0', '.', '=', '/'],
@@ -11,11 +19,7 @@ const useCalculatorStore = create((set) => ({
   
   calculateResult: () =>
     set((state) => {
-      try {
-        return { input: eval(state.input).toString() }; // Evaluate safely
-      } catch {
-        return { input: 'Error' };
-      }
+      return { input: safeEvaluate(state.input).toString() };
     }),
 
   moveButton: (fromIndex, toIndex) =>
